@@ -1,12 +1,12 @@
  from bookshelf.models import Book
  
  # retrieve the book just created
- last_book=Book.objects.last()
+ book1=Book.objects.get(pk=1)
 
  # Display all attributes
->>> print(last_book.title)
+>>> print(book1.title)
 1984
->>> print(last_book.author)
+>>> print(book1.author)
 George Orwell
->>> print(last_book.publication_year)
+>>> print(book1.publication_year)
 1949
