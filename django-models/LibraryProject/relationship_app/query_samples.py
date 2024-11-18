@@ -22,7 +22,7 @@ except Library.DoesNotExist:
 
 # Retrieve the librarian for a library
 try:
-    librarian = library.librarian  # Access the librarian via the OneToOneField
+    librarian = Librarian.objects.get(library=library)  # Explicitly query the Librarian model
     print(f"Librarian for {library_name}: {librarian.name}")
 except AttributeError:
     print(f"No librarian assigned to the library '{library_name}'.")
