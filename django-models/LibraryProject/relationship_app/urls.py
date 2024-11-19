@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import book_list, LibraryDetailView
+from .views import list_books, LibraryDetailView
 
 
 """
@@ -20,11 +20,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import book_list, LibraryDetailView
+from .views import list_books, LibraryDetailView
 
 urlpatterns = [
 
     path('admin/', admin.site.urls),
-    path('book/', book_list, name='book'),
+    path('book/', list_books, name='book'),
     path('library/<int:pk>/', LibraryDetailView.as_view(), name='library')
 ]
