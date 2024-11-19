@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from .views import list_books, LibraryDetailView
 from django.contrib.auth.views import LoginView, LogoutView
+from . import views
 
 
 urlpatterns = [
@@ -27,6 +28,8 @@ urlpatterns = [
     path('library/<int:pk>/', LibraryDetailView.as_view(), name='library'),
      # Built-in views for authentication
     path('login/', LoginView.as_view(template_name='registration/login.html'), name='login'),
-    path('logout/', LogoutView.as_view(), name='logout'),
+    path('logout/', LogoutView.as_view(template_name='registration/login.html'), name='logout'),
+     # Custom view for registration
+    path('register/', views.register, name='register')
     
 ]
