@@ -27,8 +27,8 @@ urlpatterns = [
     path('book/', list_books, name='book'),
     path('library/<int:pk>/', LibraryDetailView.as_view(), name='library'),
      # Built-in views for authentication
-    path('login/', LoginView.as_view(template_name='registration/login.html'), name='login'),
-    path('logout/', LogoutView.as_view(template_name='registration/login.html'), name='logout'),
+    path('login/', LoginView.as_view(template_name='relationship_app/login.html'), name='login'),
+    path('logout/', LogoutView.as_view(template_name='relationship_app/login.html'), name='logout'),
      # Custom view for registration
     path('register/', views.register, name='register')
     
