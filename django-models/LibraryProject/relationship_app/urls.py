@@ -1,3 +1,7 @@
+from django.urls import path
+from .views import book_list, LibraryDetailView
+
+
 """
 URL configuration for django-models project.
 
@@ -16,7 +20,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from .views import book_list, LibraryDetailView
 
 urlpatterns = [
+
     path('admin/', admin.site.urls),
+    path('book/', book_list, name='book'),
+    path('library/<int:pk>/', LibraryDetailView.as_view(), name='library')
 ]
