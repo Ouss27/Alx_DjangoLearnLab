@@ -30,3 +30,5 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout')
     
 ]
+
+views.register", "LogoutView.as_view(template_name=
