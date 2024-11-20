@@ -31,6 +31,14 @@ class SignUpView(CreateView):
 
 
     
+    # relationship_app/views.py
+
+from django.shortcuts import render
+
+# Define the 'register' view
+def register(request):
+    return render(request, 'register.html')  # You can change the return statement as needed
+
 
 
 #["UserCreationForm()", "relationship_app/register.html"]
