@@ -20,6 +20,9 @@ from .views import list_books, LibraryDetailView
 from django.contrib.auth.views import LoginView, LogoutView
 from . import views
 from django.views.generic import TemplateView
+from .admin_view import admin_view
+from .librarian_view import librarian_view
+from .member_view import member_view
 
 
 urlpatterns = [
@@ -34,11 +37,17 @@ urlpatterns = [
      # Custom view for registration
     path('register/', views.SignUpView.as_view(), name='register'),
 
-   # path('accounts/', include('django.contrib.auth.urls')),
-   # is part of Django's built-in authentication system. When included, it automatically adds a set of URL patterns for common authentication-related views, such as login, logout, password reset, etc.
+    # path('accounts/', include('django.contrib.auth.urls')),
+    # is part of Django's built-in authentication system. When included,
+    #  it automatically adds a set of URL patterns for common authentication-related views,
+    #  such as login, logout, password reset, etc.
    
     path('accounts/profile/',TemplateView.as_view(template_name='relationship_app/profile.html'),name='profile'),
 
+    #Path for Roles
+    path('admin/', admin_view, name='admin_view'),         # URL for the Admin view
+    path('librarian/', librarian_view, name='librarian_view'),  # URL for the Librarian view
+    path('member/', member_view, name='member_view'),      # URL for the Member view
 
     
 ]
