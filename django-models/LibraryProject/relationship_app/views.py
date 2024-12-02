@@ -6,8 +6,6 @@ from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.contrib.auth.views import LoginView
-from django.http import HttpResponse
-from django.contrib.auth.decorators import user_passes_test
 
 
 # Create your views here.
@@ -37,25 +35,6 @@ def role_check(role):
     def check_user(user):
         return user.is_authenticated and hasattr(user, 'profile') and user.profile.role == role
     return check_user
-
-# Admin View
-@user_passes_test(role_check('Admin'))
-def admin_view(request):
-    return HttpResponse("Welcome, Admin! You have access to this view.")
-
-# Librarian View
-@user_passes_test(role_check('Librarian'))
-def librarian_view(request):
-    return HttpResponse("Welcome, Librarian! You have access to this view.")
-
-# Member View
-@user_passes_test(role_check('Member'))
-def member_view(request):
-    return HttpResponse("Welcome, Member! You have access to this view.")
-
-# Optional: Forbidden View
-def forbidden_view(request):
-    return HttpResponse("You don't have permission to access this page.", status=403)
 
 
 # Define the 'register' view
