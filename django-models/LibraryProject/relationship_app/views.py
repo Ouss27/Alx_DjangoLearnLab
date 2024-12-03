@@ -38,7 +38,7 @@ def is_admin(user):
 
 @user_passes_test(is_admin)
 def admin_view(request):
-    return render(request, 'relationship_app/admin_template.html')
+    return render(request, 'relationship_app/admin_view.html')
 
 
 # Check if user is Librarian
@@ -47,7 +47,7 @@ def is_librarian(user):
 
 @user_passes_test(is_librarian)
 def librarian_view(request):
-    return render(request, 'relationship_app/librarian_template.html')
+    return render(request, 'relationship_app/librarian_view.html')
 
 
 # Check if user is Member
@@ -56,7 +56,7 @@ def is_member(user):
 
 @user_passes_test(is_member)
 def member_view(request):
-    return render(request, 'relationship_app/member_template.html')
+    return render(request, 'relationship_app/member_view.html')
 
 
 # Define the 'register' view
