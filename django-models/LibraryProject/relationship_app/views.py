@@ -31,24 +31,22 @@ class SignUpView(CreateView):
     success_url = reverse_lazy('login') # Redirect to login page after successful signup
     template_name = 'relationship_app/register.html'
 
-
-# Role Check Function
 def role_check(role):
     def check_user(user):
         return user.is_authenticated and hasattr(user, 'profile') and user.profile.role == role
     return check_user
 
-# Admin View
 @user_passes_test(role_check('Admin'))
 def admin_view(request):
-    return HttpResponse("Welcome, Admin! You have access to this view.")
+    return HttpResponse("Welcome, Admin!")
 
-# Librarian View
 @user_passes_test(role_check('Librarian'))
 def librarian_view(request):
-    return HttpResponse("Welcome, Librarian! You have access to this view.")
+    return HttpResponse("Welcome, Librarian!")
 
-
+@user_passes_test(role_check('Member'))
+def member_view(request):
+    return HttpResponse("Welcome, Member!")
 
 
 # Define the 'register' view

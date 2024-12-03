@@ -16,13 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from .views import list_books, LibraryDetailView
+from .views import list_books, LibraryDetailView, admin_view, librarian_view, member_view
 from django.contrib.auth.views import LoginView, LogoutView
 from . import views
 from django.views.generic import TemplateView
-from .admin_view import admin_view
-from .librarian_view import librarian_view
-from .member_view import member_view
 
 
 urlpatterns = [
@@ -45,9 +42,9 @@ urlpatterns = [
     path('accounts/profile/',TemplateView.as_view(template_name='relationship_app/profile.html'),name='profile'),
 
     #Path for Roles
-    path('admin/', admin_view, name='admin_view'),         # URL for the Admin view
-    path('librarian/', librarian_view, name='librarian_view'),  # URL for the Librarian view
-    path('member/', member_view, name='member_view'),      # URL for the Member view
-
+    
+    path('admin/', admin_view, name='admin_view'),
+    path('librarian/', librarian_view, name='librarian_view'),
+    path('member/', member_view, name='member_view'),
     
 ]

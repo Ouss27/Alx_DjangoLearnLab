@@ -36,18 +36,13 @@ class Librarian(models.Model):
         return self.name
     
 class UserProfile(models.Model):
-
     ROLE_CHOICES = [
-        ('Admin','Admin'),
-        ('Librarian','Librarian'),
-        ('Member','Member'),
+        ('Admin', 'Admin'),
+        ('Librarian', 'Librarian'),
+        ('Member', 'Member'),
     ]
-
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default= 'Member')
-
-    def __str__(self) -> str:
-        return f"{self.user.username} - {self.role}"
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='Member')
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
