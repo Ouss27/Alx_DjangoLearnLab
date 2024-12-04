@@ -7,7 +7,8 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponse
-from django.contrib.auth.decorators import user_passes_test, permission_required
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import permission_required
 
 
 # Create your views here.
