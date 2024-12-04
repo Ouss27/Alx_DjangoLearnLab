@@ -42,9 +42,13 @@ urlpatterns = [
     path('accounts/profile/',TemplateView.as_view(template_name='relationship_app/profile.html'),name='profile'),
 
     #Path for Roles
-    
     path('admin/', views.admin_view, name='admin_view'),
     path('librarian/', views.librarian_view, name='librarian_view'),
     path('member/', views.member_view, name='member_view'),
+
+    #Paths for Book(add, edit, delete)
+    path('add-book/', views.add_book, name='add_book'),
+    path('edit-book/<int:book_id>/', views.edit_book, name='edit_book'),
+    path('delete-book/<int:book_id>/', views.delete_book, name='delete_book'),
     
 ]
