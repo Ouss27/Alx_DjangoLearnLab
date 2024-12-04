@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponse
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import user_passes_test, login_required
 from django.contrib.auth.decorators import permission_required
 
 
@@ -89,6 +89,8 @@ def delete_book(request, book_id):
         book.delete()
         return HttpResponse("Book deleted successfully!")
     return render(request, 'relationship_app/delete_book.html', {'book': book})
+
+
 
 
 
