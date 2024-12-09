@@ -71,7 +71,7 @@ def save_user_profile(sender, instance, **kwargs):
 # login with email and password
 # create Usermanager taht creates USERS and SUPERUSERS
 
-class Usermanager(BaseUserManager):
+class CustomUserManager(BaseUserManager):
     
     def create_user(self, email,date_of_birth, password=None):
         if not email:
@@ -98,7 +98,7 @@ class CustomUser(AbstractUser):
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     
-    objects = Usermanager()
+    objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['date_of_birth']
