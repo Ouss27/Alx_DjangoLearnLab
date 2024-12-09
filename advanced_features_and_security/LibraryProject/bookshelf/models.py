@@ -72,31 +72,29 @@ def save_user_profile(sender, instance, **kwargs):
 # create Usermanager taht creates USERS and SUPERUSERS
 
 class CustomUserManager(BaseUserManager):
-    
-    def create_user(self, email,date_of_birth, password=None):
+    def create_user(self, username, email,date_of_birth, password=None, **extra_fields):
         if not email:
             raise ValueError("Email is required")
         if not password:
             raise ValueError("Password is required")
-        user = self.model(email = self.normalize_email(email), date_of_birth=date_of_birth,)
+        email = self.normalize_email(email)
+        user = self.model(username=username, email=email, date_of_birth=date_of_birth, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
-
         return user
 
-    def create_superuser(self, email, date_of_birth, password=None):
-        user = self.create_user(email, password=password, date_of_birth=date_of_birth,)
-        user.is_Admin = True
+    def create_superuser(self, username, email, date_of_birth, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        user = self.create_user(username, email, password, date_of_birth, **extra_fields)
         user.save(User=self._db)
 
         return user
 
 class CustomUser(AbstractUser):
-    email = models.EmailField(verbose_name="email address", unique=True,max_length=250)
-    date_of_birth = models.DateField()
-    profile_photo = models.ImageField()
-    is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
+    date_of_birth = models.DateField(null=True, blank=True)
+    profile_photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
     
     objects = CustomUserManager()
 
