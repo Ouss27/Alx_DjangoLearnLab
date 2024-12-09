@@ -128,4 +128,4 @@ LOGIN_REDIRECT_URL = "/accounts/profile"
 LOGOUT_REDIRECT_URL = "/accounts/profile"
 
 LOGIN_URL = '/login/'
-AUTH_USER_MODEL = "relationship_app.User"
+AUTH_USER_MODEL = "bookshelf.User"
