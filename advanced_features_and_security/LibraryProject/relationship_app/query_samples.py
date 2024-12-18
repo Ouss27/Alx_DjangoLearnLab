@@ -1,5 +1,5 @@
 from django.db.models import Prefetch
-from bookshelf.models import Author, Book, Library, Librarian
+from relationship_app.models import Author, Book, Library, Librarian
 
 # Query all books by a specific author
 author_name = "Some Author Name"  # Replace with the actual author's name
