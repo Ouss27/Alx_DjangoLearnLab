@@ -53,7 +53,7 @@ class UserProfile(models.Model):
         ('Librarian', 'Librarian'),
         ('Member', 'Member'),
     ]
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,related_name='profile')
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='Member')
 
     def __str__(self):
@@ -67,4 +67,10 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=CustomUser)
 def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
+    try:
+        instance.profile.save()  # Accessing via the related_name
+    except UserProfile.DoesNotExist:
+        # If the profile does not exist, create it
+        UserProfile.objects.create(user=instance)
+
+
