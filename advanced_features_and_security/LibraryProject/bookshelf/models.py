@@ -18,6 +18,15 @@ class Book(models.Model):
     def __str__(self):
         return f"{self.title} / {self.author} / {self.publication_year}"
     
+    #permissions 
+    class Meta():
+        permissions = [
+            ("can_view","can view a book"),
+            ("can_create","can create a book"),
+            ("can_edit","can edit a book"),
+            ("can_delete","can delete a book"),
+        ]
+    
 
 # Custom User Model
 
