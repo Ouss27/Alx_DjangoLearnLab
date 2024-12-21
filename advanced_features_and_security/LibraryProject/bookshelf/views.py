@@ -3,6 +3,11 @@ from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponse
 from .models import Book
 
+#check for prmission to View Book
+@permission_required('bookshelf.can_view', raise_exception=True)
+def view_book(request):
+    instances = Book.objects.all()
+    return render(request, 'bookshelf/book_list.html', {'instances': instances})
 
 #check for permission to Add Book
 @permission_required('bookshelf.can_create', raise_exception=True)
