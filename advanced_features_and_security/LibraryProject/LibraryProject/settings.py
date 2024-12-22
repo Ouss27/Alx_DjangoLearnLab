@@ -23,7 +23,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-qe%^(7s4)$pd!zj_hmj^-ca0495uz@o2nlv2r5nnlq6vyf#mwe'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Disable DEBUG in production
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -134,4 +135,18 @@ LOGOUT_REDIRECT_URL = "/accounts/profile"
 
 LOGIN_URL = '/login/'
 
+#Configure Secure Settings
 
+# Browser security headers
+SECURE_BROWSER_XSS_FILTER = True  # Enables X-XSS-Protection
+X_FRAME_OPTIONS = 'DENY'  # Prevents clickjacking
+SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevents MIME-type sniffing
+
+# Secure cookies
+CSRF_COOKIE_SECURE = True  # Ensures CSRF cookie is sent over HTTPS
+SESSION_COOKIE_SECURE = True  # Ensures session cookie is sent over HTTPS
+
+# Other recommendations
+SECURE_HSTS_SECONDS = 31536000  # Enforces HTTPS
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Applies to subdomains
+SECURE_HSTS_PRELOAD = True  # Allows the site to be preloaded in browsers supporting HSTS
