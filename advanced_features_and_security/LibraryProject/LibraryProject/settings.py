@@ -149,7 +149,7 @@ CSRF_COOKIE_SECURE = True  # Ensures CSRF cookie is sent over HTTPS
 SESSION_COOKIE_SECURE = True  # Ensures session cookie is sent over HTTPS
 
 # Other recommendations
-SECURE_HSTS_SECONDS = 31536000  # Enforces HTTPS
+SECURE_HSTS_SECONDS = 31536000  # Enforces HTTPS for 1 year
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Applies to subdomains
 SECURE_HSTS_PRELOAD = True  # Allows the site to be preloaded in browsers supporting HSTS
 
@@ -158,3 +158,26 @@ CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'")
 CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")
 CSP_IMG_SRC = ("'self'", "data:")
+
+
+# Configure Django for HTTPS Support
+
+# Redirect all HTTP traffic to HTTPS
+SECURE_SSL_REDIRECT = True
+
+#Implement Secure Headers
+X_FRAME_OPTIONS = 'DENY'  # Prevent clickjacking by disallowing framing
+SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevent browsers from MIME sniffing
+SECURE_BROWSER_XSS_FILTER = True  # Enable the browser's XSS protection
+
+
+
+
+
+
+
+
+
+
+
+
