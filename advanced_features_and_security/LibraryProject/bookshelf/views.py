@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponse
 from .models import Book
-from .forms import BookForm
+from .forms import ExampleForm
 
 
 #check for prmission to View Book
@@ -17,12 +17,12 @@ def view_book(request):
 @permission_required('bookshelf.can_create', raise_exception=True)
 def create_book(request):
     if request.method == 'POST':
-        form = BookForm(request.POST)
+        form = ExampleForm(request.POST)
         if form.is_valid():
             form.save()  # Safely save data using Django forms
             return HttpResponse("Book created successfully!")
     else:
-        form = BookForm()
+        form = ExampleForm()
     return render(request, 'bookshelf/create_book.html', {'form': form})
 
 
@@ -32,12 +32,12 @@ def edit_book(request, book_id):
     # Safely retrieve the book instance or return a 404 error
     book = get_object_or_404(Book, id=book_id)
     if request.method == 'POST':
-        form = BookForm(request.POST, instance=book)
+        form = ExampleForm(request.POST, instance=book)
         if form.is_valid():
             form.save()  # Safely save changes
             return HttpResponse("Book edited successfully!")
     else:
-        form = BookForm(instance=book)
+        form = ExampleForm(instance=book)
     return render(request, 'bookshelf/edit_book.html', {'form': form})
 
 
