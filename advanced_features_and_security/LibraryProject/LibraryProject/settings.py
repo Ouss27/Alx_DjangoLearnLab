@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'LibraryProject.relationship_app',
+    'csp',
     ]
 
 #Custom User Model
@@ -54,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'csp.middleware.CSPMiddleware',
 ]
 
 
@@ -150,3 +152,9 @@ SESSION_COOKIE_SECURE = True  # Ensures session cookie is sent over HTTPS
 SECURE_HSTS_SECONDS = 31536000  # Enforces HTTPS
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Applies to subdomains
 SECURE_HSTS_PRELOAD = True  # Allows the site to be preloaded in browsers supporting HSTS
+
+# Define CSP rules
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'")
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")
+CSP_IMG_SRC = ("'self'", "data:")
