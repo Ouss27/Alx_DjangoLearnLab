@@ -171,6 +171,9 @@ SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevent browsers from MIME sniffing
 SECURE_BROWSER_XSS_FILTER = True  # Enable the browser's XSS protection
 
 
+# Secure SSL header for requests behind a proxy
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 
 
 
