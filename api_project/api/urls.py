@@ -1,10 +1,10 @@
 from django.urls import include, path
 from .views import BookList
 from rest_framework.routers import DefaultRouter
-from api_project.api import views
+from api import views
 
 router = DefaultRouter()
-router.register(r'book_all', views.BookViewSet, basename='book_all')
+router.register(r'books_all', views.BookViewSet, basename='book_all')
 
 
 
