@@ -19,13 +19,9 @@ from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/',include('api.urls')) # Include API app URLs
+    path('admin/', admin.site.urls), #admin 
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'), #token Authentication
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), #token Authentication
+    path('api/',include('api.urls')), # Include API app URLs
+    path("api.auth/", include("rest_framework.urls")), # add authentication angel to the browsable page
 ]
-
-urlpatterns += [
-    path("api.auth/", include("rest_framework.urls")) # add authentication angel to the browsable page
-
-    ]
