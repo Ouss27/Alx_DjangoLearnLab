@@ -78,4 +78,44 @@ class BookAPITestCase(TestCase):
         # Verify that the book is deleted from the database
         self.assertEqual(Book.objects.count(), 0)
 
+#Test Filtering
 
+    def test_filter_books(self):
+        # Send a GET request with a filter for author
+        response = self.client.get(reverse('book-list') + '?author=Test Author')
+        
+        # Check if the response status is 200 (OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        # Ensure at least one book matches the filter
+        self.assertTrue(len(response.data) > 0)
+
+#Test Searching
+
+    def test_search_books(self):
+        # Send a GET request with a search query
+        response = self.client.get(reverse('book-list') + '?search=Test')
+        
+        # Check if the response status is 200 (OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+#Test Ordering
+
+    def test_order_books(self):
+        # Send a GET request to order books by published year in descending order
+        response = self.client.get(reverse('book-list') + '?ordering=-published_year')
+        
+        # Check if the response status is 200 (OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+#Test Unauthorized Access
+
+    def test_unauthorized_access(self):
+        # Log out the user to simulate an unauthenticated request
+        self.client.logout()
+        
+        # Attempt to access a protected resource
+        response = self.client.get(reverse('book-detail', kwargs={'pk': self.book.id}))
+        
+        # Check if the response status is 403 (Forbidden)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
