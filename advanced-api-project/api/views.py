@@ -7,11 +7,11 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters import rest_framework as filters
 
 filters.OrderingFilter = OrderingFilter
-
+filters.SearchFilter = SearchFilter
 
 
 class ListView(generics.ListAPIView):
-    filter_backends = (filters.DjangoFilterBackend, SearchFilter, filters.OrderingFilter)
+    filter_backends = (filters.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filterset_fields = ['title', 'author', 'publication_year']
     search_fields = ['title', 'author__name']
     ordering_fields = ['title', 'publication_year']
