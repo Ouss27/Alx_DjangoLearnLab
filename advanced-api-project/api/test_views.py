@@ -3,18 +3,25 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 from .models import Book
+from django.contrib.auth.models import User
 
 #Set Up Test Data
 class BookAPITestCase(TestCase):
     def setUp(self):
         # Initialize APIClient for sending API requests
         self.client = APIClient()
+
+         # Create a test user for authentication
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+        
+        # Log in the test user
+        self.client.login(username='testuser', password='testpass')
         
         # Define sample data for a book
         self.book_data = {
             'title': 'Test Book', 
             'author': 'Test Author', 
-            'published_year': 2023
+            'publication_year': 2023
         }
       # Create a book instance in the test database
         self.book = Book.objects.create(**self.book_data)
@@ -22,11 +29,15 @@ class BookAPITestCase(TestCase):
 #Test Create Operation
 
     def test_create_book(self):
+
+        # Log in the user
+        self.client.login(username='testuser', password='testpass')
+
         # Send a POST request to create a new book
-        response = self.client.post(reverse('book-list'), data={
+        response = self.client.post(reverse('books_list'), data={
             'title': 'New Book',
             'author': 'New Author',
-            'published_year': 2024
+            'publication_year': 2024
         })
         
         # Check if the response status is 201 (Created)
@@ -39,7 +50,7 @@ class BookAPITestCase(TestCase):
 
     def test_read_book(self):
         # Send a GET request to retrieve details of the created book
-        response = self.client.get(reverse('book-detail', kwargs={'pk': self.book.id}))
+        response = self.client.get(reverse('book_detail', kwargs={'pk': self.book.id}))
         
         # Check if the response status is 200 (OK)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -50,11 +61,15 @@ class BookAPITestCase(TestCase):
 #Test Update Operation
 
     def test_update_book(self):
+
+        # Log in the user
+        self.client.login(username='testuser', password='testpass')
+
         # Send a PUT request to update the book details
-        response = self.client.put(reverse('book-detail', kwargs={'pk': self.book.id}), data={
+        response = self.client.put(reverse('book_detail', kwargs={'pk': self.book.id}), data={
             'title': 'Updated Title',
             'author': 'Updated Author',
-            'published_year': 2025
+            'publication_year': 2025
         })
         
         # Check if the response status is 200 (OK)
@@ -69,8 +84,12 @@ class BookAPITestCase(TestCase):
 #Test Delete Operation
 
     def test_delete_book(self):
+
+        # Log in the user
+        self.client.login(username='testuser', password='testpass')
+
         # Send a DELETE request to remove the book
-        response = self.client.delete(reverse('book-detail', kwargs={'pk': self.book.id}))
+        response = self.client.delete(reverse('book_detail', kwargs={'pk': self.book.id}))
         
         # Check if the response status is 204 (No Content)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -82,7 +101,7 @@ class BookAPITestCase(TestCase):
 
     def test_filter_books(self):
         # Send a GET request with a filter for author
-        response = self.client.get(reverse('book-list') + '?author=Test Author')
+        response = self.client.get(reverse('books_list') + '?author=Test Author')
         
         # Check if the response status is 200 (OK)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -94,7 +113,7 @@ class BookAPITestCase(TestCase):
 
     def test_search_books(self):
         # Send a GET request with a search query
-        response = self.client.get(reverse('book-list') + '?search=Test')
+        response = self.client.get(reverse('books_list') + '?search=Test')
         
         # Check if the response status is 200 (OK)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -103,7 +122,7 @@ class BookAPITestCase(TestCase):
 
     def test_order_books(self):
         # Send a GET request to order books by published year in descending order
-        response = self.client.get(reverse('book-list') + '?ordering=-published_year')
+        response = self.client.get(reverse('books_list') + '?ordering=-publication_year')
         
         # Check if the response status is 200 (OK)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -115,7 +134,7 @@ class BookAPITestCase(TestCase):
         self.client.logout()
         
         # Attempt to access a protected resource
-        response = self.client.get(reverse('book-detail', kwargs={'pk': self.book.id}))
+        response = self.client.get(reverse('book_detail', kwargs={'pk': self.book.id}))
         
         # Check if the response status is 403 (Forbidden)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

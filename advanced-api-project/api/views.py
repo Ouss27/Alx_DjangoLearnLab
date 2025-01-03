@@ -29,7 +29,7 @@ class ListView(generics.ListAPIView):
 class BookListView(ListView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    #permission_classes = [IsAuthenticatedOrReadOnly]  # Allows unauthenticated read-only access
+    permission_classes = [IsAuthenticatedOrReadOnly]  # Allows unauthenticated read-only access
     
     def get_queryset(self):
         return Book.objects.all()
