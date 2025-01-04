@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
-from .models import Book
+from .models import Book, Author
 from django.contrib.auth.models import User
 
 #Set Up Test Data
@@ -16,11 +16,14 @@ class BookAPITestCase(TestCase):
         
         # Log in the test user
         self.client.login(username='testuser', password='testpass')
+
+         # Create an Author instance and assign it to self.author
+        self.author = Author.objects.create(name='Test Author')
         
         # Define sample data for a book
         self.book_data = {
             'title': 'Test Book', 
-            'author': 'Test Author', 
+            'author': self.author, 
             'publication_year': 2023
         }
       # Create a book instance in the test database
@@ -34,9 +37,9 @@ class BookAPITestCase(TestCase):
         self.client.login(username='testuser', password='testpass')
 
         # Send a POST request to create a new book
-        response = self.client.post(reverse('books_list'), data={
+        response = self.client.post(reverse('books_create'), data={
             'title': 'New Book',
-            'author': 'New Author',
+            'author': self.author.id,
             'publication_year': 2024
         })
         
@@ -66,9 +69,9 @@ class BookAPITestCase(TestCase):
         self.client.login(username='testuser', password='testpass')
 
         # Send a PUT request to update the book details
-        response = self.client.put(reverse('book_detail', kwargs={'pk': self.book.id}), data={
+        response = self.client.put(reverse('books_update', kwargs={'pk': self.book.id}), data={
             'title': 'Updated Title',
-            'author': 'Updated Author',
+            'author': self.author.id,
             'publication_year': 2025
         })
         
@@ -89,7 +92,7 @@ class BookAPITestCase(TestCase):
         self.client.login(username='testuser', password='testpass')
 
         # Send a DELETE request to remove the book
-        response = self.client.delete(reverse('book_detail', kwargs={'pk': self.book.id}))
+        response = self.client.delete(reverse('books_delete', kwargs={'pk': self.book.id}))
         
         # Check if the response status is 204 (No Content)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -101,13 +104,17 @@ class BookAPITestCase(TestCase):
 
     def test_filter_books(self):
         # Send a GET request with a filter for author
-        response = self.client.get(reverse('books_list') + '?author=Test Author')
+        response = self.client.get(reverse('books_list') + f'?author={self.author.id}') # cause it's a foreignKey we use ID of related Author
         
         # Check if the response status is 200 (OK)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
-        # Ensure at least one book matches the filter
+    
+    # Ensure at least one book matches the filter
         self.assertTrue(len(response.data) > 0)
+    
+    # Verify the returned book matches the filtered author
+        for book in response.data:
+            self.assertEqual(book['author'], self.author.id)
 
 #Test Searching
 
@@ -134,7 +141,7 @@ class BookAPITestCase(TestCase):
         self.client.logout()
         
         # Attempt to access a protected resource
-        response = self.client.get(reverse('book_detail', kwargs={'pk': self.book.id}))
+        response = self.client.get(reverse('books_delete', kwargs={'pk': self.book.id})) # for example delete a book
         
-        # Check if the response status is 403 (Forbidden)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        # Check if the response status is 401 (UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
