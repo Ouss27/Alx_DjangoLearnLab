@@ -1,0 +1,16 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block title %}{{ view.action|default:"Create a New Post" }}{% endblock %}
+
+{% block content %}
+    <div style="background: #fff; padding: 20px; border-radius: 5px;">
+        <h1>{{ view.action|default:"Create a New Post" }}</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success" style="margin-top: 10px;">Save</button>
+        </form>
+        <a href="{% url 'post-list' %}" class="btn btn-secondary" style="margin-top: 10px;">Cancel</a>
+    </div>
+{% endblock %}

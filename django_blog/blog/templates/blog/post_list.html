@@ -1,19 +1,20 @@
-{% extends "blog/base.html" %}
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block title %}All Posts{% endblock %}
 
 {% block content %}
-<div class="content">
-    <h2>Blog Posts</h2>
-    <ul>
+    <h1 style="text-align: center;">All Posts</h1>
+    <a href="{% url 'post-create' %}" class="btn btn-primary" style="margin-bottom: 20px; display: block; text-align: center;">Create New Post</a>
+    <ul style="list-style-type: none; padding: 0;">
         {% for post in posts %}
-        <li>
-            <h3>{{ post.title }}</h3>
-            <p><small>By {{ post.author }} on {{ post.published_date }}</small></p>
-            <p>{{ post.content|truncatewords:20 }}</p>
-            <a href="#">Read More</a>
-        </li>
-        {% empty %}
-        <li>No posts available.</li>
+            <li style="margin-bottom: 20px; background: #fff; padding: 10px; border-radius: 5px;">
+                <h2><a href="{% url 'post-detail' post.pk %}" style="color: #007bff;">{{ post.title }}</a></h2>
+                <p>{{ post.content|truncatewords:20 }}</p>
+                <small>Published: {{ post.published_date }}</small>
+                <small>By: {{ post.author }}</small>
+            </li>
         {% endfor %}
     </ul>
-</div>
 {% endblock %}
+
