@@ -1,0 +1,19 @@
+{% extends "blog/base.html" %}
+
+{% block content %}
+<div class="content">
+    <h2>Blog Posts</h2>
+    <ul>
+        {% for post in posts %}
+        <li>
+            <h3>{{ post.title }}</h3>
+            <p><small>By {{ post.author }} on {{ post.published_date }}</small></p>
+            <p>{{ post.content|truncatewords:20 }}</p>
+            <a href="#">Read More</a>
+        </li>
+        {% empty %}
+        <li>No posts available.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
