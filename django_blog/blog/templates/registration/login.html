@@ -1,12 +1,15 @@
-{% load static %}
 {% extends "blog/base.html" %}
+{% load static %}
+
 {% block content %}
 <div class="content">
     <h2>Login</h2>
-    <form method="post">
+    <form method="post" class="form">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Login</button>
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
     </form>
     {% if form.errors %}
     <div class="error">
