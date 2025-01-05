@@ -133,3 +133,7 @@ LOGIN_URL = '/login/'
 
 # after a successful login, redirected to /profile/ 
 LOGIN_REDIRECT_URL = '/profile/'
+
+#if using profile_picture
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
