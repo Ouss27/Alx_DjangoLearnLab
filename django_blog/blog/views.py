@@ -56,10 +56,19 @@ class PostListView(ListView):
     context_object_name = "posts"
     ordering = ['-published_date']  # Order by newest posts
 
-# DetailView: Show details of a single post
+# DetailView: Show details of a single post and its comments
+
 class PostDetailView(DetailView):
     model = Post
     template_name = "blog/post_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        post = self.get_object()  # Get the specific post
+        context['post'] = post
+        context['comments'] = post.comments.all()  # Fetch all comments for the post
+        context['form'] = CommentForm()  # Include a blank form for adding comments
+        return context
 
 # CreateView: Allow users to create posts
 class PostCreateView(LoginRequiredMixin, CreateView):
@@ -103,8 +112,9 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
     form_class = CommentForm
 
     def form_valid(self, form):
+        post = get_object_or_404(Post, pk=self.kwargs['pk'])  # Use 'pk' for the post
         form.instance.author = self.request.user
-        form.instance.post = get_object_or_404(Post, pk=self.kwargs['post_id'])
+        form.instance.post = post
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -113,6 +123,16 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
 class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Comment
     form_class = CommentForm
+    template_name = "blog/post_detail.html"  # Use the same template as post_detail
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        comment = self.get_object()
+        post = comment.post  # Get the related post
+        context['post'] = post
+        context['comments'] = post.comments.all()  # Fetch all comments for the post
+        context['edit_comment'] = comment  # Pass the comment being edited
+        return context
 
     def get_success_url(self):
         return self.object.post.get_absolute_url()
@@ -121,8 +141,20 @@ class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         comment = self.get_object()
         return self.request.user == comment.author
 
+
 class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Comment
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        comment = self.get_object()
+        post = comment.post  # Get the post related to the comment
+        context['post'] = post
+        context['comments'] = post.comments.all()
+        return context
+
+    def get_template_names(self):
+        return ["blog/post_detail.html"]
 
     def get_success_url(self):
         return self.object.post.get_absolute_url()
