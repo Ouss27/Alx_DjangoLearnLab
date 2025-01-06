@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from .models import Post, Comment, Tag
+from .models import Post, Comment
 
 #user Registration View
 def register(request):
@@ -71,35 +71,21 @@ class PostDetailView(DetailView):
 # CreateView: Allow users to create posts
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ['title', 'content']  # Fields to display in the form, We'll handle tags manually in form_valid
+    fields = ['title', 'content', 'tags']  # Include tags in the form
     template_name = "blog/post_form.html"
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        response = super().form_valid(form)
-        # Handle tags
-        tags = self.request.POST.get('tags', '')
-        tag_list = [tag.strip() for tag in tags.split(',') if tag.strip()]
-        for tag_name in tag_list:
-            tag, created = Tag.objects.get_or_create(name=tag_name)
-            form.instance.tags.add(tag)
-        return response
+        return super().form_valid(form)
     
+#UpdateView: Allow authors to update their posts
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content']
+    fields = ['title', 'content', 'tags']  # Include tags in the form
     template_name = "blog/post_form.html"
 
     def form_valid(self, form):
-        response = super().form_valid(form)
-        # Handle tags
-        tags = self.request.POST.get('tags', '')
-        form.instance.tags.clear()  # Remove existing tags
-        tag_list = [tag.strip() for tag in tags.split(',') if tag.strip()]
-        for tag_name in tag_list:
-            tag, created = Tag.objects.get_or_create(name=tag_name)
-            form.instance.tags.add(tag)
-        return response
+        return super().form_valid(form)
 
     def test_func(self):
         post = self.get_object()
