@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404, redirect
-from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm, CommentForm
+from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm, CommentForm, PostForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -52,10 +52,17 @@ class PostListView(ListView):
     model = Post
     template_name = "blog/post_list.html"
     context_object_name = "posts"
-    ordering = ['-published_date']  # Order by newest posts
+    ordering = ['-published_date']
+
+    #filter posts by tags using URLs like /posts/?tag=django
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        tag = self.request.GET.get('tag')
+        if tag:
+            queryset = queryset.filter(tags__name__icontains=tag)
+        return queryset
 
 # DetailView: Show details of a single post and its comments
-
 class PostDetailView(DetailView):
     model = Post
     template_name = "blog/post_detail.html"
@@ -63,7 +70,7 @@ class PostDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         post = self.get_object()  # Get the specific post
-        context['post'] = post
+        context['tags'] = post.tags.all()  # Add tags to the context
         context['comments'] = post.comments.all()  # Fetch all comments for the post
         context['form'] = CommentForm()  # Include a blank form for adding comments
         return context
@@ -71,7 +78,7 @@ class PostDetailView(DetailView):
 # CreateView: Allow users to create posts
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ['title', 'content', 'tags']  # Include tags in the form
+    form_class = PostForm  # Use the custom form
     template_name = "blog/post_form.html"
 
     def form_valid(self, form):
@@ -81,15 +88,15 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 #UpdateView: Allow authors to update their posts
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content', 'tags']  # Include tags in the form
+    form_class = PostForm  # Use the custom form
     template_name = "blog/post_form.html"
 
     def form_valid(self, form):
         return super().form_valid(form)
 
-    def test_func(self):
-        post = self.get_object()
-        return self.request.user == post.author  # Ensure only the author can edit
+    def get_queryset(self):
+        # Ensure the logged-in user can only edit their own posts
+        return Post.objects.filter(author=self.request.user)
 
 # DeleteView: Allow authors to delete their posts
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -97,9 +104,9 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     template_name = "blog/post_confirm_delete.html"
     success_url = reverse_lazy('post-list')  # Redirect to the list view after deletion
 
-    def test_func(self):
-        post = self.get_object()
-        return self.request.user == post.author  # Only the author can delete the post
+    def get_queryset(self):
+        # Ensure the logged-in user can only delete their own posts
+        return Post.objects.filter(author=self.request.user)
 
 
 ############## Comments CRUD VIEWS ###################
