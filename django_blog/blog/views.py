@@ -5,9 +5,9 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from .models import Post, Comment
+from .models import Post, Comment, Tag
 
-#Registration View
+#user Registration View
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
@@ -18,8 +18,6 @@ def register(request):
     else:
         form = CustomUserCreationForm()
     return render(request, 'blog/register.html', {'form': form})
-
-
 
 #Profile Management View
 @login_required
@@ -73,26 +71,39 @@ class PostDetailView(DetailView):
 # CreateView: Allow users to create posts
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ['title', 'content']  # Fields to display in the form
+    fields = ['title', 'content']  # Fields to display in the form, We'll handle tags manually in form_valid
     template_name = "blog/post_form.html"
 
     def form_valid(self, form):
-        form.instance.author = self.request.user  # Set the author to the logged-in user
-        return super().form_valid(form)
-
-# UpdateView: Allow authors to edit their posts
+        form.instance.author = self.request.user
+        response = super().form_valid(form)
+        # Handle tags
+        tags = self.request.POST.get('tags', '')
+        tag_list = [tag.strip() for tag in tags.split(',') if tag.strip()]
+        for tag_name in tag_list:
+            tag, created = Tag.objects.get_or_create(name=tag_name)
+            form.instance.tags.add(tag)
+        return response
+    
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     fields = ['title', 'content']
     template_name = "blog/post_form.html"
 
     def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        # Handle tags
+        tags = self.request.POST.get('tags', '')
+        form.instance.tags.clear()  # Remove existing tags
+        tag_list = [tag.strip() for tag in tags.split(',') if tag.strip()]
+        for tag_name in tag_list:
+            tag, created = Tag.objects.get_or_create(name=tag_name)
+            form.instance.tags.add(tag)
+        return response
 
     def test_func(self):
         post = self.get_object()
-        return self.request.user == post.author  # Only the author can edit the post
+        return self.request.user == post.author  # Ensure only the author can edit
 
 # DeleteView: Allow authors to delete their posts
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
