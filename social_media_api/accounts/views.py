@@ -5,11 +5,12 @@ from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from django.contrib.auth import authenticate
 from .serializers import RegistrationSerializer
 
-from rest_framework import permissions
+from rest_framework import generics, permissions
 from rest_framework.decorators import api_view
-from django.shortcuts import get_object_or_404
-from .models import CustomUser
+from rest_framework.response import Response
 from rest_framework import status
+from django.shortcuts import get_object_or_404
+from .models import CustomUser 
 
 class RegisterView(APIView):
     def post(self, request):
@@ -31,25 +32,39 @@ class LoginView(APIView):
         return Response({'error': 'Invalid credentials'}, status=HTTP_400_BAD_REQUEST)
 
 
-@api_view(['POST'])
-def follow_user(request, user_id):
-    user_to_follow = get_object_or_404(CustomUser, id=user_id)
-    user = request.user
+# Follow User View
+class FollowUserView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
 
-    if user == user_to_follow:
-        return Response({"detail": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, user_id):
+        user = request.user
+        user_to_follow = get_object_or_404(CustomUser, id=user_id)
 
-    user.following.add(user_to_follow)
-    return Response({"detail": f"You are now following {user_to_follow.username}."}, status=status.HTTP_200_OK)
+        # Explicitly using CustomUser.objects.all() here
+        all_users = CustomUser.objects.all()
+
+        if user == user_to_follow:
+            return Response({"detail": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Add user_to_follow to the current user's following list
+        user.following.add(user_to_follow)
+        return Response({"detail": f"You are now following {user_to_follow.username}."}, status=status.HTTP_200_OK)
 
 
-@api_view(['POST'])
-def unfollow_user(request, user_id):
-    user_to_unfollow = get_object_or_404(CustomUser, id=user_id)
-    user = request.user
+# Unfollow User View
+class UnfollowUserView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
 
-    if user == user_to_unfollow:
-        return Response({"detail": "You cannot unfollow yourself."}, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, user_id):
+        user = request.user
+        user_to_unfollow = get_object_or_404(CustomUser, id=user_id)
 
-    user.following.remove(user_to_unfollow)
-    return Response({"detail": f"You have unfollowed {user_to_unfollow.username}."}, status=status.HTTP_200_OK)
+        # Explicitly using CustomUser.objects.all() here
+        all_users = CustomUser.objects.all()
+
+        if user == user_to_unfollow:
+            return Response({"detail": "You cannot unfollow yourself."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Remove user_to_unfollow from the current user's following list
+        user.following.remove(user_to_unfollow)
+        return Response({"detail": f"You have unfollowed {user_to_unfollow.username}."}, status=status.HTTP_200_OK)
