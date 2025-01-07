@@ -1,11 +1,14 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, generics
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 from django_filters import rest_framework as filters
 
-from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+from rest_framework import status
+from django.shortcuts import get_object_or_404
+from accounts.models import CustomUser
 
 
 class PostFilter(filters.FilterSet):
@@ -40,12 +43,19 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
 
-class FeedView(generics.ListAPIView):
-    serializer_class = PostSerializer
-    permission_classes = [IsAuthenticated]
+class FeedView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
-        # Get the list of users that the current user follows
-        following = self.request.user.following.all()
-        # Get posts from the users the current user follows
-        return Post.objects.filter(author__in=following).order_by('-created_at')
+    def get(self, request):
+        # Get the current user
+        user = request.user
+
+        # Get the list of users the current user follows
+        following_users = user.following.all()
+
+        # Get posts from the users that the current user follows
+        posts = Post.objects.filter(author__in=following_users).order_by('-created_at')
+
+        serializer = PostSerializer(posts, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
