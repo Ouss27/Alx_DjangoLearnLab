@@ -3,6 +3,10 @@ from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 from django_filters import rest_framework as filters
 
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
 
 class PostFilter(filters.FilterSet):
     title = filters.CharFilter(lookup_expr='icontains')  # Case-insensitive search by title
@@ -36,3 +40,12 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
 
+class FeedView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Get the list of users that the current user follows
+        following = self.request.user.following.all()
+        # Get posts from the users the current user follows
+        return Post.objects.filter(author__in=following).order_by('-created_at')
