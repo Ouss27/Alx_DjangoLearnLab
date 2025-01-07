@@ -2,7 +2,7 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views 
 from .views import (PostListView, PostDetailView, PostCreateView, PostUpdateView, PostDeleteView, 
-                    CommentCreateView, CommentUpdateView, CommentDeleteView)
+                    CommentCreateView, CommentUpdateView, CommentDeleteView, SearchView, PostsByTagView)
 
 urlpatterns = [
     # Login and logout views using Django's built-in views
@@ -26,5 +26,7 @@ urlpatterns = [
     path('comment/<int:pk>/update/', CommentUpdateView.as_view(), name='comment-edit'),
     path('comment/<int:pk>/delete/', CommentDeleteView.as_view(), name='comment-delete'),
 
-
+    #search paths
+    path('search/', SearchView.as_view(), name='search'),
+    path('tags/<str:tag_name>/', PostsByTagView.as_view(), name='posts-by-tag'),
 ]

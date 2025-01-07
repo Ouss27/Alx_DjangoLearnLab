@@ -22,6 +22,11 @@
                     
                 </li>
                 <li><a href="{% url 'register' %}">Register</a></li>
+                 <!-- Search Bar -->
+            <form method="get" action="{% url 'search' %}" style="display: inline;">
+                <input type="text" name="q" placeholder="Search..." value="{{ query|default:'' }}">
+                <button type="submit">Search</button>
+            </form>
             </ul>
         </nav>
     </header>
