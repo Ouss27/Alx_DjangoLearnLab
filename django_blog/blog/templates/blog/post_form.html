@@ -4,18 +4,13 @@
 {% block title %}{{ view.action|default:"Create a New Post" }}{% endblock %}
 
 {% block content %}
-    <div style="background: #fff; padding: 20px; border-radius: 5px;">
-        <h1>{{ view.action|default:"Create a New Post" }}</h1>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <div class="form-group">
-                <label for="tags">Tags (comma-separated):</label>
-                <input type="text" name="tags" id="tags" class="form-control" 
-                       value="{% if object %}{% for tag in object.tags.all %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}">
-            </div>
-            <button type="submit" class="btn btn-success" style="margin-top: 10px;">Save</button>
-        </form>
-        <a href="{% url 'post-list' %}" class="btn btn-secondary" style="margin-top: 10px;">Cancel</a>
-    </div>
+<div style="background: #fff; padding: 20px; border-radius: 5px;">
+    <h1>{{ view.action|default:"Create a New Post" }}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success" style="margin-top: 10px;">Save</button>
+    </form>
+    <a href="{% url 'post-list' %}" class="btn btn-secondary" style="margin-top: 10px;">Cancel</a>
+</div>
 {% endblock %}

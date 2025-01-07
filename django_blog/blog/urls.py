@@ -28,6 +28,6 @@ urlpatterns = [
 
     #search paths
     path('search/', SearchView.as_view(), name='search'),
-    path('tags/<slug:tag_slug>//', PostByTagListView.as_view(), name='posts-by-tag'),
+    path('tags/<slug:tag_slug>/', PostByTagListView.as_view(), name='posts-by-tag'),
     
 ]

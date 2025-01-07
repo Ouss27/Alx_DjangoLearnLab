@@ -97,8 +97,11 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return super().form_valid(form)
 
     def get_queryset(self):
-        # Ensure the logged-in user can only edit their own posts
-        return Post.objects.filter(author=self.request.user)
+        return Post.objects.all()  # Use all posts since test_func will handle permissions
+
+    def test_func(self):
+        post = self.get_object()
+        return self.request.user == post.author
 
 # DeleteView: Allow authors to delete their posts
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -106,10 +109,9 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     template_name = "blog/post_confirm_delete.html"
     success_url = reverse_lazy('post-list')  # Redirect to the list view after deletion
 
-    def get_queryset(self):
-        # Ensure the logged-in user can only delete their own posts
-        return Post.objects.filter(author=self.request.user)
-
+    def test_func(self):
+        post = self.get_object()  # Get the post being deleted
+        return self.request.user == post.author  # Allow only the author to delete
 
 ############## Comments CRUD VIEWS ###################
 
