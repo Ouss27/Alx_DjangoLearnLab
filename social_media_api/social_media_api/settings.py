@@ -155,3 +155,6 @@ SECURE_SSL_REDIRECT = True  # Ensures that HTTP requests are redirected to HTTPS
 
 import os
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'r*byh(wmn5=*r*her3^c#evodl&io5973=ycv11qnatb(&txm3')
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL = '/static/'
