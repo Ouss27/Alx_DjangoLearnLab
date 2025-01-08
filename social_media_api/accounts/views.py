@@ -3,33 +3,42 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from django.contrib.auth import authenticate
-from .serializers import RegistrationSerializer
-
-from rest_framework import generics, permissions
+from .serializers import RegistrationSerializer, UserSerializer
+from rest_framework import generics, permissions, status
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
 from django.shortcuts import get_object_or_404
 from .models import CustomUser 
 
+
 class RegisterView(APIView):
     def post(self, request):
+        # Deserialize the data using RegistrationSerializer
         serializer = RegistrationSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            token, _ = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key}, status=HTTP_201_CREATED)
-        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
-class LoginView(APIView):
-    def post(self, request):
-        username = request.data.get('username')
-        password = request.data.get('password')
-        user = authenticate(username=username, password=password)
-        if user:
-            token, _ = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key})
-        return Response({'error': 'Invalid credentials'}, status=HTTP_400_BAD_REQUEST)
+        if serializer.is_valid():
+            # Save the new user
+            user = serializer.save()
+
+            # Create the token for the new user
+            token, created = Token.objects.get_or_create(user=user)
+
+            # Return the user data along with the token
+            return Response({
+                "user": UserSerializer(user).data,
+                "token": token.key
+            }, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# class LoginView(APIView):
+#     def post(self, request):
+#         username = request.data.get('username')
+#         password = request.data.get('password')
+#         user = authenticate(username=username, password=password)
+#         if user:
+#             token, _ = Token.objects.get_or_create(user=user)
+#             return Response({'token': token.key})
+#         return Response({'error': 'Invalid credentials'}, status=HTTP_400_BAD_REQUEST)
 
 
 # Follow User View
