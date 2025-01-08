@@ -65,9 +65,8 @@ class LikePostView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, pk):
-        post = Post.objects.filter(pk=pk).first()
-        if not post:
-            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        post = get_object_or_404(Post, pk=pk)
         
         like, created = Like.objects.get_or_create(user=request.user, post=post)
         if created:
@@ -86,8 +85,12 @@ class UnlikePostView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def delete(self, request, pk):
-        like = Like.objects.filter(user=request.user, post_id=pk).first()
+
+        post = get_object_or_404(Post, pk=pk)
+
+        like = Like.objects.filter(user=request.user, post=post).first()
         if like:
             like.delete()
             return Response({"message": "Post unliked"}, status=status.HTTP_200_OK)
         return Response({"error": "Like not found"}, status=status.HTTP_404_NOT_FOUND)
+    
