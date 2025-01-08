@@ -1,14 +1,13 @@
-from rest_framework import viewsets, permissions, generics
-from .models import Post, Comment
+from rest_framework import viewsets, permissions, generics, status
+from .models import Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer
 from django_filters import rest_framework as filters
-
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
-from rest_framework import status
 from django.shortcuts import get_object_or_404
 from accounts.models import CustomUser
+from rest_framework.views import APIView
+from notifications.models import Notification
 
 
 class PostFilter(filters.FilterSet):
@@ -59,3 +58,36 @@ class FeedView(generics.GenericAPIView):
         serializer = PostSerializer(posts, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+
+class LikePostView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        post = Post.objects.filter(pk=pk).first()
+        if not post:
+            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
+        if created:
+            # Create a notification for the post's author
+            Notification.objects.create(
+                recipient=post.author,
+                actor=request.user,
+                verb="liked your post",
+                target=post
+            )
+            return Response({"message": "Post liked"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"error": "You already liked this post"}, status=status.HTTP_400_BAD_REQUEST)
+
+class UnlikePostView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, pk):
+        like = Like.objects.filter(user=request.user, post_id=pk).first()
+        if like:
+            like.delete()
+            return Response({"message": "Post unliked"}, status=status.HTTP_200_OK)
+        return Response({"error": "Like not found"}, status=status.HTTP_404_NOT_FOUND)
