@@ -5,7 +5,6 @@ from django_filters import rest_framework as filters
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from accounts.models import CustomUser
 from rest_framework.views import APIView
 from notifications.models import Notification
 
@@ -27,8 +26,11 @@ class PostViewSet(viewsets.ModelViewSet):
     filterset_class = PostFilter
 
     def perform_create(self, serializer):
+        print(f"User making request: {self.request.user}")
         # Automatically set the author to the current user when creating a post
         serializer.save(author=self.request.user)
+
+
 
 
 
@@ -94,3 +96,16 @@ class UnlikePostView(APIView):
             return Response({"message": "Post unliked"}, status=status.HTTP_200_OK)
         return Response({"error": "Like not found"}, status=status.HTTP_404_NOT_FOUND)
     
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.exceptions import AuthenticationFailed
+
+class TestView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            user, token = TokenAuthentication().authenticate(request)
+            return Response({"message": "Token is valid!", "user": user.username})
+        except AuthenticationFailed as e:
+            return Response({"detail": str(e)}, status=401)

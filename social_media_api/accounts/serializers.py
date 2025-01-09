@@ -3,14 +3,14 @@ from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
 
 
-CustomUser = get_user_model()
+User = get_user_model()
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField()
 
     class Meta:
-        model = CustomUser
+        model = User
         fields = ['username', 'email', 'password', 'bio', 'profile_picture']
 
     def create(self, validated_data):
@@ -28,12 +28,12 @@ class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     class Meta:
-        model = CustomUser
+        model = User
         fields = ('id', 'username', 'email', 'password')
 
     def create(self, validated_data):
         # Create the user and set the password
-        user = CustomUser.objects.create_user(
+        user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
             password=validated_data['password']

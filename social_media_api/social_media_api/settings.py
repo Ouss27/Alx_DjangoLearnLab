@@ -134,7 +134,20 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+         'rest_framework.authentication.TokenAuthentication',  # For Token auth
+        'rest_framework.authentication.BasicAuthentication',  # For Basic auth
+        'rest_framework.authentication.SessionAuthentication',  # For login sessions
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+
+    # Disable CSRF for the API if you're using token authentication
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
     ],
 
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -151,10 +164,11 @@ SIMPLE_JWT = {
 SECURE_BROWSER_XSS_FILTER = True
 X_FRAME_OPTIONS = 'DENY'
 SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_SSL_REDIRECT = True  # Ensures that HTTP requests are redirected to HTTPS
+SECURE_SSL_REDIRECT = False
 
 import os
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'r*byh(wmn5=*r*her3^c#evodl&io5973=ycv11qnatb(&txm3')
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = '/static/'
+
